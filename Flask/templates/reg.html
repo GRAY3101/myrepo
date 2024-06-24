@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrierung</title>
+
+    <style>
+        .all
+        {
+            scale: 200%;
+        }
+        .uberschrift
+        {
+            text-align: center;
+            margin-top: 15%;
+        }
+
+        .eingabe
+        {
+            text-align: center;
+            
+        }
+
+        .VNAbstand
+        {
+            margin-bottom: 5px;
+
+        }
+
+        .email
+        {
+            margin-left: -73px;
+            margin-bottom: 5px;
+        }
+
+        .passwort
+        {
+            margin-right: 75px;
+            margin-bottom: 5px;
+        }
+        .Fehlermeldung
+        {
+            margin-left: 0px;
+            margin-top: 0px;
+            margin-bottom: 0px;
+            color: red;
+            font-size: 70%;
+        }
+
+    </style>
+</head>
+<body class="all">
+    <h1 class="uberschrift">Registrieren</h1>
+    <form class="eingabe" action="/" method="POST">
+        <div class="input-group VNAbstand">
+            <span class="input-group-text">Vor- und Nachname: </span>
+            <input type="text" name="userName" placeholder="Vorname" aria-label="First name" class="form-control">
+            <input type="text" name="userNach" placeholder="Nachname" aria-label="Last name" class="form-control">
+        </div>
+
+        <div class="input-group mb-3 email">
+            <span class="input-group-text" id="basic-addon2">Email: </span>
+            <input type="text" name="userEmail" class="form-control" placeholder="Benutzer" aria-label="Recipient's username" aria-describedby="basic-addon2">
+            {%if emailVor == True%}
+            <p class="Fehlermeldung" id="basic-addon2">Email existiert bereits</p>
+            {%endif%}
+        </div>
+        
+        <div class="input-group passwort mb-3">
+            <span class="input-group-text" id="basic-addon1">Passwort: </span>
+            <input type="password" id="pw" name="userPass" class="form-control" placeholder="Passwort" aria-label="Username" aria-describedby="basic-addon1">
+            <input id="check" type="checkbox" />
+            <script>
+                var check = document.getElementById("check"), 
+                    pw = document.getElementById("pw");
+                check.onclick = function() {
+                    pw.type = this.checked ? "text" : "password";	
+                };
+            </script>
+        </div>
+          
+        
+        <button type="submit" value="Weiter">Weiter</button>
+        <p>
+        <a class="anm" href="/anmelden">Du bist bereits registriert?</a>
+        </p>
+    </form>
+      
+</body>
+</html>

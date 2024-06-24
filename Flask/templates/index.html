@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHAT</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <style>
+        .my-form {
+            position: fixed;
+            bottom: 24px;
+            right: 80px;
+            left: 80px;
+            width: calc(100% - 160px);
+        }
+
+        .Xdate {
+            font-size: 10px;
+            position: absolute;
+            right: 4px;
+            bottom: 4px;
+            color: gray;
+        }
+
+        .unten {
+            margin-bottom: 100px;
+        }
+
+        .button {
+            opacity: 1;
+            background-color: rgb(81, 90, 90);
+            color: white;
+        }
+
+        #chat {
+            max-height: 850px; /* Adjust the height as needed */
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="">
+
+    <nav class="navbar bg-body-tertiary nachrichtenfeld">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Chat Messenger</a>
+            <a class="benWechs" href="/anmelden">Benutzer wechseln</a>
+        </div>
+    </nav>
+
+    <div class="container unten" id="chat">
+        {% for x in nachricht %}
+        <div class="d-flex {% if name == x.user %}justify-content-end {% else %} justify-content-start {% endif %} mt-3">
+            <div class="card">
+                <div class="card-body">
+                    <b>{{ x.user }}:</b> {{ x.content }}
+                    <span class="Xdate">{{ x.created_at.strftime("%d.%m.%Y %H:%M") }}</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div> 
+
+    <div class="container">
+        <form id="messageForm" class="input-group mb-3 my-form" action="" method="POST">
+            <input type="text" id="content" name="content" class="form-control" placeholder="Nachricht:">
+            <button class="btn btn-outline-secondary button" type="submit" name="senden">Senden</button>
+        </form>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+    <script type="text/javascript" charset="utf-8">
+    var socket = io();
+    socket.on('connect', function() {
+        socket.emit('my event', {data: 'I\'m connected!'});
+    });
+</script>
+    <script>
+        $(document).ready(function() {
+            var socket = io();
+            var userName = '{{ name }}'; // Ensure this is passed from Flask
+
+            $('#messageForm').submit(function(event) {
+                event.preventDefault(); // Prevent the default form submission
+
+                var content = $('#content').val().trim();
+                
+                if (userName && content) {
+                    socket.emit('send_message', { userName: userName, content: content });
+
+                    $('#content').val(''); // Clear the input field
+                } else {
+                    console.error('Missing userName or content');
+                }
+            });
+
+            socket.on('receive_message', function(data) {
+                $('#chat').append('<div class="d-flex ' + (userName === data.userName ? 'justify-content-end' : 'justify-content-start') + ' mt-3">' +
+                    '<div class="card"><div class="card-body"><b>' + data.userName + ':</b> ' + data.content +
+                    '<span class="Xdate">' + new Date().toLocaleString() + '</span></div></div></div>');
+                scrollToBottom();
+            });
+
+            function scrollToBottom() {
+                $('#chat').scrollTop($('#chat')[0].scrollHeight);
+            }
+
+            // Initial scroll to bottom in case there are pre-existing messages
+            scrollToBottom();
+        });
+    </script>
+
+</body>
+</html>
